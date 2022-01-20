@@ -32,11 +32,6 @@ def get_weather(city_name):
         'country': country
     }
     return   resp_dict
-    
-
-@app.route('/hello')
-def hello_world():
-        return 'hello world'
 
 if __name__ == "__main__":
     app.run(debug=True)
