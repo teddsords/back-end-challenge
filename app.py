@@ -1,12 +1,13 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
 import requests
 from flask_caching import Cache
+import json
 
 # Reading API key for OpenWeather
 file_open= open('api_key.txt', 'r')
 api_key = file_open.read()
 
-cache_ttl = 50     # 300 seconds, since cache uses seconds for timeout
+cache_ttl = 10     # 300 seconds, since cache uses seconds for timeout
 default_max_number = 5      # Defining the number of maximum cities that can be stored in cache
 
 cache = Cache()     # Creating a cache object
@@ -15,9 +16,7 @@ app.config['CACHE_TYPE'] = 'simple' # Configuring cache type
 cache.init_app(app)     # Initiating cache
 
 
-
 @app.route('/temperature/<string:city_name>')
-#@cache.memoize(timeout= cache_ttl)
 def get_weather(city_name):
     
     url= f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric'
@@ -33,15 +32,36 @@ def get_weather(city_name):
         'country': resp['sys']['country']
     }
 
+    keys = cache.get('id')
+    if keys == None:
+        keys = []
+
+    while len(keys) >= 5:
+        keys.pop(0)
+    
+    keys.append(city_name)
+
+    cache.set(f'{city_name}', weather, timeout= cache_ttl)
+    cache.set('id', keys, timeout= cache_ttl)
     return render_template("result.html", weather=weather)
     
 @app.route('/temperature')
 def get_weather_from_cache():
     # get data from cache using the number specified by the user or using the default max number
     #input_number = request.args.get('max')
-    data = cache.get('weather')
+    data = cache.get('id')
+    if data == None:
+        return '<h1>No data to show </h1>'
+    
+    print(data)
 
-    return data
+    datas = []
+    for key in data:
+        if cache.get(key) != None:
+            datas.append(cache.get(key))
+
+    print(datas)
+    return render_template("cache_result.html", weather=datas)
 
 if __name__ == "__main__":
     app.run(debug=True)
