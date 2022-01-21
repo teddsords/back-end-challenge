@@ -1,10 +1,14 @@
-from audioop import avg
 from flask import Flask, render_template, request
 import requests
+from flask_caching import Cache
+
+cache = Cache()
 
 app = Flask(__name__)
+cache.init_app(app)
 
-api_key= 'b0e2f7b304d5e48c71b8c9501255bdf8'
+file_open= open('api_key.txt', 'r')
+api_key = file_open.read()
 
 @app.route('/temperature/<city_name>')
 def get_weather(city_name):
@@ -20,7 +24,7 @@ def get_weather(city_name):
 
     return render_template("result.html", min_temp=min_temp, max_temp=max_temp, avg_temp=avg_temp,
     real_feel=real_feel, city=city, country=country)
-
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
