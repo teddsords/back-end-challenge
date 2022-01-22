@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 import requests
-from flask_caching import Cache
+from flask_caching import Cache, request
 import os
 
 cache = Cache()     # Creating a cache object
@@ -14,6 +14,7 @@ def get_weather(city_name):
 
     city_name = city_name.lower()       # Lower string to have more control withou worring how the user wrote it
     cache_ttl = int(os.environ.get('CACHE_TTL'))     # Getting cache_ttl from environment variables, converting to int because it return string
+    default_max_number = int(os.environ.get('DEFAULT_MAX_NUMBER'))  # Getting default max number from environment variables, converting to int because it return string
     
     keys = cache.get('id')              # Getting the ids from cache to verify if it was queried before
     if keys == None:                    # If there are no ids in cache
@@ -38,7 +39,7 @@ def get_weather(city_name):
 
         print('Got it by a get request') # Printing in console that we got it from a GET request
         
-        while len(keys) >= 5:             # If there are more than 5 cities in cache, we need to get rid of them until we have only 5
+        while len(keys) >= default_max_number:      # If there are more than 5 cities in cache, we need to get rid of them until we have only 5
             keys.pop(0)                   # Getting rid of the older cities
     
         keys.append(city_name)            # Adding city name to the list
@@ -54,23 +55,38 @@ def get_weather(city_name):
 @app.route('/temperature')
 def get_weather_from_cache():
     # get data from cache using the number specified by the user or using the default max number
-    #input_number = request.args.get('max')
+    input_number = request.args.get('max')      # Returns None if no number is provided
 
-    default_max_number = int(os.environ.get('DEFAULT_MAX_NUMBER'))  # Getting default max number from environment variables, converting to int because it return string
+    if input_number == None:        # There is no need to use default number because it is done in /temperature/<city_name> route
 
-    data = cache.get('id')
-    if data == None:
-        return '<h1>No data to show </h1>'
-    
-    print(data)
+        data = cache.get('id')
+        if data == None:
+            return '<h1>No data to show </h1>'
+        print(data)
 
-    datas = []
-    for key in data:
-        if cache.get(key) != None:
-            datas.append(cache.get(key))
+        datas = []
+        for key in data:
+            if cache.get(key) != None:
+                datas.append(cache.get(key))
 
-    print(datas)
-    return render_template("cache_result.html", weather=datas)
+        print(datas)
+        return render_template("cache_result.html", weather=datas)
+
+    else:       # Return the amount of queried cities specified in query
+
+        data = cache.get('id')
+        if data == None:
+            return '<h1>No data to show </h1>'
+        print(data)
+
+        datas = []
+        for x in range(int(input_number)):
+            city = data[x]
+            if cache.get(city) != None:
+                datas.append(cache.get(city))
+
+        print(datas)
+        return render_template("cache_result.html", weather=datas)
 
 if __name__ == "__main__":
     app.run(debug=True)
