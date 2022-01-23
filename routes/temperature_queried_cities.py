@@ -4,6 +4,7 @@ from .cache import cache
 
 temperature_queried_cities = Blueprint('temperature_queried_cities', __name__, template_folder='../templates')
 
+@temperature_queried_cities.route('/temperature')
 def get_weather_from_cache():
     # get data from cache using the number specified by the user or using the default max number
     input_number = request.args.get('max')      # Returns None if no number is provided

@@ -22,7 +22,7 @@ def get_weather(city_name):
         url= f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric'       # URL for making get request
 
         resp= requests.get(url).json()  # Getting response in JSON format
-
+        
         weather = {                     # Formatting response into dict format
             'min_temp': round(resp['main']['temp_min']), 
             'max_temp': round(resp['main']['temp_max']),
