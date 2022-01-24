@@ -1,3 +1,4 @@
+from charset_normalizer import api
 from flask import Blueprint, render_template, request
 from .cache import cache
 import os
@@ -22,29 +23,30 @@ def get_weather(city_name):
         url= f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric'       # URL for making get request
 
         resp= requests.get(url).json()  # Getting response in JSON format
-        print(resp)
         
-        weather = {                     # Formatting response into dict format
-            'min_temp': round(resp['main']['temp_min']), 
-            'max_temp': round(resp['main']['temp_max']),
-            'temp': round(resp['main']['temp']),
-            'real_feel': round(resp['main']['feels_like']),
-            'city': resp['name'],
-            'country': resp['sys']['country']
-        }
+        if resp['cod'] == 200:
+            weather = {                     # Formatting response into dict format
+                'min_temp': round(resp['main']['temp_min']), 
+                'max_temp': round(resp['main']['temp_max']),
+                'temp': round(resp['main']['temp']),
+                'real_feel': round(resp['main']['feels_like']),
+                'city': resp['name'],
+                'country': resp['sys']['country']
+            }
 
-        print('Got it by a get request') # Printing in console that we got it from a GET request
+            print('Got it by a get request') # Printing in console that we got it from a GET request
+            
+            while len(keys) >= default_max_number:      # If there are more than 5 cities in cache, we need to get rid of them until we have only 5
+                keys.pop(0)                   # Getting rid of the older cities
         
-        while len(keys) >= default_max_number:      # If there are more than 5 cities in cache, we need to get rid of them until we have only 5
-            keys.pop(0)                   # Getting rid of the older cities
-    
-        keys.append(city_name)            # Adding city name to the list
-        cache.set(city_name, weather, timeout= cache_ttl)       # Adding weather data to cache
-        cache.set('id', keys, timeout= cache_ttl)               # Adding city name to cache and using it as id
-        #return render_template("result.html", weather=weather)  # Rendering page
-        return weather    
+            keys.append(city_name)            # Adding city name to the list
+            cache.set(city_name, weather, timeout= cache_ttl)       # Adding weather data to cache
+            cache.set('id', keys, timeout= cache_ttl)               # Adding city name to cache and using it as id
+            return weather 
+              
+        else:
+            return resp, resp['cod']
 
     else:       # Getting data from cache, since is already stored, there is no need to do a GET request once again, speeding up process
         print('Got it from cache')      # Printing in console that we got data from cache
-        #return render_template("result.html", weather=data)     # Rendering page with data from cache
         return data

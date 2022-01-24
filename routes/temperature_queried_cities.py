@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 from flask_caching import request
 from .cache import cache
+import json
 
 temperature_queried_cities = Blueprint('temperature_queried_cities', __name__, template_folder='../templates')
 
@@ -13,23 +14,20 @@ def get_weather_from_cache():
 
         data = cache.get('id')
         if data == None:
-            return '<h1>No data to show </h1>'
-        print(data)
+            return json.dumps('No data to show'), 404
 
         datas = []
         for key in data:
             if cache.get(key) != None:
                 datas.append(cache.get(key))
 
-        print(datas)
-        return render_template("cache_result.html", weather=datas)
+        return json.dumps(datas)
 
     else:       # Return the amount of queried cities specified in query
 
         data = cache.get('id')
         if data == None:
-            return '<h1>No data to show </h1>'
-        print(data)
+            return json.dumps('No data to show'), 404
 
         datas = []
         for x in range(int(input_number)):
@@ -37,5 +35,4 @@ def get_weather_from_cache():
             if cache.get(city) != None:
                 datas.append(cache.get(city))
 
-        print(datas)
-        return render_template("cache_result.html", weather=datas)
+        return json.dumps(datas)
