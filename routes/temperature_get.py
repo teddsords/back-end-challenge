@@ -1,5 +1,4 @@
-from charset_normalizer import api
-from flask import Blueprint, render_template, request
+from flask import Blueprint, request
 from .cache import cache
 import os
 import requests
@@ -43,7 +42,7 @@ def get_weather(city_name):
             cache.set(city_name, weather, timeout= cache_ttl)       # Adding weather data to cache
             cache.set('id', keys, timeout= cache_ttl)               # Adding city name to cache and using it as id
             return weather 
-              
+            
         else:
             return resp, resp['cod']
 
