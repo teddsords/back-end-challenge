@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from .cache import cache
 import os
 import requests
@@ -22,6 +22,7 @@ def get_weather(city_name):
         url= f'http://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric'       # URL for making get request
 
         resp= requests.get(url).json()  # Getting response in JSON format
+        print(resp)
         
         weather = {                     # Formatting response into dict format
             'min_temp': round(resp['main']['temp_min']), 
@@ -40,8 +41,10 @@ def get_weather(city_name):
         keys.append(city_name)            # Adding city name to the list
         cache.set(city_name, weather, timeout= cache_ttl)       # Adding weather data to cache
         cache.set('id', keys, timeout= cache_ttl)               # Adding city name to cache and using it as id
-        return render_template("result.html", weather=weather)  # Rendering page
-    
+        #return render_template("result.html", weather=weather)  # Rendering page
+        return weather    
+
     else:       # Getting data from cache, since is already stored, there is no need to do a GET request once again, speeding up process
         print('Got it from cache')      # Printing in console that we got data from cache
-        return render_template("result.html", weather=data)     # Rendering page with data from cache
+        #return render_template("result.html", weather=data)     # Rendering page with data from cache
+        return data
