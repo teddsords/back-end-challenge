@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask
 from routes.cache import cache
 from routes.temperature_get import temperature_get
 from routes.temperature_queried_cities import temperature_queried_cities
