@@ -12,8 +12,7 @@ temperature_get = Blueprint('temperature_get', __name__, template_folder= '../te
 @temperature_get.route('/temperature/<string:city_name>')
 def get_weather(city_name: str)-> Union[Weather, str]:
 
-    """Example endpoint returning a list of colors by palette
-    This is using docstrings for specifications.
+    """Endpoint returning a Weather model which contains weather information from city queried.
     ---
     parameters:
       - name: city_name

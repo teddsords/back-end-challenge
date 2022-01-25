@@ -10,8 +10,7 @@ temperature_queried_cities = Blueprint('temperature_queried_cities', __name__, t
 
 @temperature_queried_cities.route('/temperature')
 def get_weather_from_cache()-> Union[ListOfWeathers, str]:
-    """Example endpoint returning a list of colors by palette
-    This is using docstrings for specifications.
+    """Endpoint returning a ListOfWeathers which contains a list of Weather in which weather information is contained
     ---
     parameters:
       - name: max
