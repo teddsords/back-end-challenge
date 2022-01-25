@@ -8,7 +8,6 @@ Design and build a wrapper for the Open Weather API current weather data service
 
 
 # PROJECT STRUCTURE
-.
 ```bash
 ├── routes
 │   ├── __init__.py
@@ -67,11 +66,15 @@ Design and build a wrapper for the Open Weather API current weather data service
     ```cmd
     python -m venv env
     ```
- 3. Install all dependencies
+ 3. Activate virtual environment
+    ```cmd
+    venv\Scripts\activate.bat
+    ```
+ 4. Install all dependencies
     ```cmd
     pip install -r requirements.txt
     ```
- 4. Create a '.env' file to declare environment variables, for example:
+ 5. Create a '.env' file in root folder to declare environment variables, for example:
     ```txt
     CACHE_TTL=50
     DEFAULT_MAX_NUMBER=5
@@ -83,7 +86,7 @@ Design and build a wrapper for the Open Weather API current weather data service
     ```cmd
     python app.py
     ```
- 5. Enter 'localhost:5000/apidocs/' by opening your favorite browser and test my API.
+ 7. Enter 'localhost:5000/apidocs/' by opening your favorite browser and test my API.
  
 
 ## TESTING
