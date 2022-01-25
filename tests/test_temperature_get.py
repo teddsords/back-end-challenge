@@ -3,6 +3,7 @@ from routes.temperature_get import temperature_get
 from routes.cache import cache
 import json
 import time
+from models.models import Weather, ListOfWeathers
 
 def test_temperature_get():
     '''
@@ -20,14 +21,14 @@ def test_temperature_get():
     url = f'/temperature/{city_name}'
 
     response = client.get(url)
-    data = json.loads(response.get_data(as_text=True))
+    data= Weather(**json.loads(response.get_data(as_text=True)))
 
     assert response.status_code == 200 
-    assert city_name.lower() == data['city'].lower()
-    assert  isinstance(data['min_temp'], int)
-    assert  isinstance(data['max_temp'], int)
-    assert  isinstance(data['temp'], int)
-    assert  isinstance(data['real_feel'], int)
+    assert city_name.lower() == data.city_name.lower()
+    assert  isinstance(data.min_temp, int)
+    assert  isinstance(data.max_temp, int)
+    assert  isinstance(data.temp, int)
+    assert  isinstance(data.real_feel, int)
 
 def test_temperature_not_found():
     '''
@@ -63,11 +64,11 @@ def test_temperature_from_cache():
     url = f'/temperature/{city_name}'
 
     response = client.get(url)
-    data = json.loads(response.get_data(as_text=True))
+    data= Weather(**json.loads(response.get_data(as_text=True)))
 
     time.sleep(2)
 
     response = client.get(url)
-    data_cache = json.loads(response.get_data(as_text=True))
+    data_cache = Weather(**json.loads(response.get_data(as_text=True)))
 
     assert data == data_cache
