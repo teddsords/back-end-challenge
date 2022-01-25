@@ -11,6 +11,48 @@ temperature_get = Blueprint('temperature_get', __name__, template_folder= '../te
 
 @temperature_get.route('/temperature/<string:city_name>')
 def get_weather(city_name: str)-> Union[Weather, str]:
+
+    """Example endpoint returning a list of colors by palette
+    This is using docstrings for specifications.
+    ---
+    parameters:
+      - name: city_name
+        in: path
+        type: string
+        required: true
+    definitions:
+      Weather:
+        type: object
+        properties:
+          city_name:
+            type: string
+          country:
+            type: string
+          min_temp:
+            type: integer
+          max_temp:
+            type: integer
+          temp:
+            type: integer
+          real_feel:
+            type: integer
+    responses:
+      200:
+        description: Weather object with information retrieved from Open Weather API
+        schema:
+          $ref: '#/definitions/Weather'
+        examples:
+          Weather:
+            city_name: 
+                value: Itajai
+            country: BR
+            min_temp: 22
+            max_temp: 34
+            temp: 28
+            real_feel: 30
+      404:
+        description: HTTP error Not Found       
+    """
     city_name = city_name.lower()       # Lower string to have more control withou worring how the user wrote it
     cache_ttl = int(os.getenv('CACHE_TTL'))     # Getting cache_ttl from environment variables, converting to int because it return string
     default_max_number = int(os.getenv('DEFAULT_MAX_NUMBER'))  # Getting default max number from environment variables, converting to int because it return string

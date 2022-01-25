@@ -10,6 +10,39 @@ temperature_queried_cities = Blueprint('temperature_queried_cities', __name__, t
 
 @temperature_queried_cities.route('/temperature')
 def get_weather_from_cache()-> Union[ListOfWeathers, str]:
+    """Example endpoint returning a list of colors by palette
+    This is using docstrings for specifications.
+    ---
+    parameters:
+      - name: max
+        in: query
+        type: integer
+        required: false
+    definitions:
+        ListOfWeathers:
+            type: object
+            properties:
+                weathers:
+                    type: array
+                    items: 
+                        $ref: '#/definitions/Weather' 
+    responses:
+      200:
+        description: ListOfWeathers object with Weathers array retrieved from cache
+        schema:
+          $ref: '#/definitions/ListOfWeathers'
+        examples:
+          ListOfWeathers:
+            weathers:
+                city_name: Itajai
+                country: BR
+                min_temp: 22
+                max_temp: 34
+                temp: 28
+                real_feel: 30
+      404:
+        description: HTTP error Not Found       
+    """
     # get data from cache using the number specified by the user or using the default max number
     input_number = request.args.get('max')      # Returns None if no number is provided
 
